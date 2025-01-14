@@ -100,15 +100,19 @@ function parseDescription(descriptionRaw) {
 
   // 2.3) Extraire un prix (nombre + euros/€) ex. "170 euros", "340€", "150", etc.
   // Regex: 
-  //   (\d{2,4}) --> 2 à 4 chiffres (ex. 170, 340, 1500)
+  //   (\d{2,4}) --> 2 à 3 chiffres (ex. 170, 340, 1500)
   //   \s*       --> éventuellement des espaces
   //   (?:€|euros)? --> éventuellement le symbole € ou "euros"
-  const priceRegex = /(\d{2,4})\s*(?:€|euros)?/i;
+  const priceRegex = /(\d{2,3})\s*(?:€|euros)?/i;
   const priceMatch = description.match(priceRegex);
   
   let prix = null;
-  if (priceMatch) {
-    prix = priceMatch[1]; // ex. "170"
+  if (match) {
+    prix = match[1]; // ex. "170"
+  } else {
+    // Si aucun prix n'est trouvé,
+    // on fixe un "prix" par défaut.
+    prix = '170';
   }
 
   return { nomFamille, prix };
