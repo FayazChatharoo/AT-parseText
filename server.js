@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 
 /**************************************************
  * 1) Fonction de parsing du "summary"
- *    - summary: ex. "Dom Dominique 06.43.26.84.07"
+ *    - summary: ex. "Dom Marie 06.56.91.39.62"
  *    - Objectif: extraire "type", "prenom", "phoneBrut"
  **************************************************/
 function parseSummary(summaryRaw) {
@@ -48,7 +48,7 @@ function parseSummary(summaryRaw) {
   if (match) {
     type = match[1];       // ex. "Dom", "tel", "Skype"
     prenom = match[2];     // ex. "Dominique" ou "Jean-Claude"
-    phoneBrut = match[3];  // ex. "06.43.26.84.07"
+    phoneBrut = match[3];  // ex. "06.56.91.39.62"
   }
 
   // Normalisation du "type" en minuscules
@@ -76,7 +76,7 @@ function parseSummary(summaryRaw) {
 
 /**************************************************
  * 2) Fonction de parsing de la description
- *    - description: ex. "Mme Dupont Rendezvous... 170 euros"
+ *    - description: ex. "Mme Dupont Rendezvous... xxx euros"
  *    - Objectif: extraire "nomFamille" et "prix"
  **************************************************/
 function parseDescription(descriptionRaw) {
