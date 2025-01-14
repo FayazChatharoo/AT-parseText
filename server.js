@@ -104,7 +104,7 @@ function parseDescription(descriptionRaw) {
   //   \s*       --> éventuellement des espaces
   //   (?:€|euros)? --> éventuellement le symbole € ou "euros"
   const priceRegex = /(\d{2,3})\s*(?:€|euros)?/i;
-  const priceMatch = description.match(priceRegex);
+  const match = withoutPrefixes.match(priceRegex);
   
   let prix = null;
   if (match) {
