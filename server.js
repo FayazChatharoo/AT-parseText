@@ -90,13 +90,33 @@ function parseDescription(descriptionRaw) {
     ''
   ).trim();
 
-  // 2.2) Extraire le premier mot comme nom de famille (approche basique)
-  // On "split" par espaces
-  const words = withoutPrefixes.split(/\s+/);
-  let nomFamille = null;
-  if (words.length > 0 && words[0].length > 0) {
+  // 2.2) Extraire le nom de famille (gestion des cas spéciaux : "de", "du", "le", etc.)
+const words = withoutPrefixes.split(/\s+/);
+let nomFamille = null;
+
+// Vérifie si le premier mot appartient à une structure spécifique
+if (words.length > 1) {
+  const firstWord = words[0].toLowerCase();
+  const secondWord = words[1].toLowerCase();
+  const thirdWord = words.length > 2 ? words[2].toLowerCase() : null;
+
+  // Cas : "de", "du", "le", "la" suivi d'un mot
+  if (["de", "du", "le", "la"].includes(firstWord)) {
+    if (["le", "la", "du", "de"].includes(secondWord) && thirdWord) {
+      // Si deuxième mot est aussi un article ou préposition, on inclut le troisième
+      nomFamille = `${words[0]} ${words[1]} ${words[2]}`;
+    } else {
+      // Sinon, on prend les deux premiers mots
+      nomFamille = `${words[0]} ${words[1]}`;
+    }
+  } else {
+    // Cas général : pas d'article ou préposition en premier mot
     nomFamille = words[0];
   }
+} else if (words.length > 0 && words[0].length > 0) {
+  // Si un seul mot, on le prend comme nom de famille
+  nomFamille = words[0];
+}
 
   // 2.3) Extraire un prix (nombre + euros/€) ex. "170 euros", "340€", "150", etc.
   // Regex: 
@@ -116,7 +136,7 @@ function parseDescription(descriptionRaw) {
   } else {
     // Si aucun prix n'est trouvé,
     // on fixe un "prix" par défaut.
-    prix = '170';
+    prix = '170 (à vérifier)';
   }
 
   return { nomFamille, prix };
