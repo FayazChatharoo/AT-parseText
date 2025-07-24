@@ -62,7 +62,9 @@ function parseSummary(summaryRaw) {
     } else if (
       lower.startsWith('sky')  || 
       lower.startsWith('skipe')|| 
-      lower.startsWith('skaipe')
+      lower.startsWith('skaipe')||
+      lower.startsWith('skyp')||
+      lower.startsWith('skip')
     ) {
       type = 'skype';
     } else {
@@ -120,7 +122,7 @@ if (words.length > 1) {
 
   // 2.3) Extraire un prix (nombre + euros/€) ex. "170 euros", "340€", "150", etc.
   // Regex: 
-  //   (\d{2,4}) --> 2 à 3 chiffres (ex. 170, 340, 1500)
+  //   (\d{2,4}) --> 2 à 3 chiffres (ex. 170, 340, 150)
   //   \s*       --> éventuellement des espaces
   //   (?:€|euros)? --> éventuellement le symbole € ou "euros"
   const priceRegex = /(\d{2,4})\s*(?:€|euros)/i;
