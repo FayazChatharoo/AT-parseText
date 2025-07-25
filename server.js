@@ -9,6 +9,7 @@
 
 const express = require('express');
 const app = express();
+const { formatPhoneNumber } = require('./phone-utils');
 
 // --- Pour qu'Express sache parser du JSON dans le body ---
 app.use(express.json());
@@ -142,71 +143,6 @@ if (words.length > 1) {
   }
 
   return { nomFamille, prix };
-}
-
-/**************************************************
- * 3) Fonction de "nettoyage" + formatage d'un numéro
- *    - Enlève les caractères non numériques (sauf +)
- *    - Détermine l'indicatif:
- *      - France (commençant par 0, on bascule en +33)
- *      - Belgique (0032, etc.)
- *      - Suisse (0041 ou 41), 
- *      - Réunion (0262 => +262, ou besoin d'autres règles ?)
- *    - Sinon renvoie "Erreur: Numéro non reconnu ou mal formaté"
- **************************************************/
-function formatPhoneNumber(phoneRaw) {
-  // Sécurité si phoneRaw est null ou undefined
-  const phone = phoneRaw || '';
-  
-  // Nettoyer: enlever tout sauf + et chiffres
-  let cleaned = phone.replace(/[^\d+]/g, '');
-
-  // 1) Vérif si c'est un format France "0X... (10 chiffres)"
-  //    => ex. 06, 07 => mobile, 02 => possible (Réunion) ?
-  //    On peut distinguer mobiles / fixes ou laisser simple
-  //    Ici, on va simplifier: tout 0X (10 chiffres) => +33
-  const frenchMobile = /^(0\d{9})$/;  
-  if (frenchMobile.test(cleaned)) {
-    // On retire le "0" et on rajoute +33
-    return '+33' + cleaned.substring(1);
-  }
-
-  // 2) Belgique: "0032" + 7 chiffres (11 total)
-  //    ou "0032" + 8, selon si on inclut le 0... 
-  //    On peut adapter la longueur selon la norme
-  if (/^0032\d{7,8}$/.test(cleaned)) {
-    // On supprime 4 chars "0032" => +32
-    return '+32' + cleaned.substring(4);
-  }
-
-  // 3) Suisse: "0041" + 9 => 13 total
-  if (/^0041\d{9}$/.test(cleaned)) {
-    return '+41' + cleaned.substring(4);
-  }
-  // Suisse: "41" + 9 => 11 total
-  if (/^41\d{9}$/.test(cleaned)) {
-    return '+41' + cleaned.substring(2);
-  }
-
-  // 4) Réunion: indicatif +262
-  //    ex. 0262XX... => 10 chiffres => +262262XX...
-  //    On peut faire un test plus précis, ici c'est un exemple
-  //    Reconnu si commence par 0262 et fait 9 ou 10 chiffres, etc.
-  if (/^0262\d{6,7}$/.test(cleaned)) {
-    return '+262' + cleaned.substring(1); 
-  }
-
-  // 5) Si c'est déjà en format +33, +41, +32, +262, etc.
-  //    On peut juste le retourner tel quel si c'est plausible
-  //    Ex. if cleaned.startsWith('+33') -> return cleaned;
-  //    (Tu peux ajouter d'autres conditions si tu veux)
-  if (/^\+(\d{2,3})\d+/.test(cleaned)) {
-    // on suppose que c'est déjà un indicatif international correct
-    return cleaned;
-  }
-
-  // Sinon, pas reconnu
-  return 'Erreur: Numéro non reconnu ou mal formaté';
 }
 
 /**************************************************
