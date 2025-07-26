@@ -37,7 +37,8 @@ function parseSummary(summaryRaw) {
    *
    * Le "i" indique qu'on ignore la casse (DOM, doM, etc.)
    **************************************************/
-  const mainRegex = /^(\S+)\s+(.+)\s+([\d .+\-()/]+)$/i;
+  //const mainRegex = /^(\S+)\s+(.+)\s+([\d .+\-()/]+)$/i;
+  const mainRegex = /^(\S+)\s+(.+?)\s+((?:\+?\d[\d .\-()/]*)$)/i;
   const match = summary.match(mainRegex);
 
   // Par défaut, on prépare un objet "vide" si pas de match
